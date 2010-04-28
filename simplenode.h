@@ -1,25 +1,3 @@
-/*
-This program is part of Netmodeler, a library for graph and network
-modeling and simulation.
-Copyright (C) 2005  University of Florida
-Copyright (C) 2005  P. Oscar Boykin <boykin@pobox.com>, University of Florida
-Copyright (C) 2005  Tae Woong Choi <twchoi@ufl.edu>, University of Florida
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
-     
 #ifndef starsky__simplenode_h
 #define starsky__simplenode_h
 
@@ -43,22 +21,26 @@ namespace Starsky {
       int _ttl;
       int _conn;
       std::set<std::string> _itemSet;
-      //token part
-      std::map<int, int> _tokenManage;
+      std::map<int, int> _tokenManage; //token table
+      std::map<int, bool> _tokenStartCheck; //token method start check
+      std::map<int, int> _freebieManage; //freebie table
+      std::map<int, int> _messageIDtable; //message ID table
       float _probability;  // probability of query ignore
       int _rxmessage;
+      int _txmessage;
       int _querymessage;
       int _procmessage;
+      int _messageID;
       int _queryhits;
       int _cachehits;
       bool _group_id;
-      //int _init_token = 2;
+      int _qNum;
+      bool _lastedge;
+      //bool _tokenStart;
 
       void printItems();
 
      public:
-
-
       SimpleNode();
       /**
        * @param addr node's address 
@@ -66,7 +48,12 @@ namespace Starsky {
        * @param own if true, delete the item when we are deleted
        */
       SimpleNode(const int addr, const int ttl, const int connection_limit, const float prob, bool g_id);
-      //SimpleNode(const int addr);
+
+      //int getQnumber();
+
+      //void IncQnumber();
+
+      int token_value(int neighbor_addr);
 
       int getAddress();
 
@@ -90,17 +77,32 @@ namespace Starsky {
        * @param item, insert obj to a node
        */
       void deleteItem(std::string item);
-      /**
- *     * return # of hits
- *     */
 
-      void token_init(int neighbor);
+      void token_start(int neighbor_addr);
+
+      bool token_check(int neighbor_addr);
+
+      void token_startinit(int neighbor_addr);
+ /*     
+      //is token table for neighbor maken?
+      void token_make(int neighbor);
+
+      bool token_makecheck(int neighbor_addr);
+
+      void token_makechange(int neighbor_addr);
+      //is token table for neighbor maken?
+*/
+      void token_init(int neighbor_addr);
 
       void token_increase(int neighbor_addr);
 
       void token_decrease(int neighbor_addr);
 
-      bool token_check(int neighbor_addr);
+      bool token_valuecheck(int neighbor_addr);
+
+      bool token_there(int neighbor_addr);
+
+      int size_tokenTable();
 
       void hitcount();
 
@@ -108,20 +110,45 @@ namespace Starsky {
 
       void countrxmessage();
 
+      void counttxmessage();
+
       int getCachehits();
 
       int getQueryhits();
 
       int getrxmessage();
 
+      int gettxmessage();
+
       int getprmessage();
 
-      int getQuerymessage();      
+      int getQuerymessage();
+
+      int getMID();
+      
+      void increaseMID();
+      
+      bool messageIDcheck(int origin_node, int messageID);  
+
+      int messageIDtablesize();    
 
       float getprob();
 
       bool getGroupid();
 
+      void lastEdgechange();
+
+      void lastEdgeinit();
+
+      bool lastEdgecheck();
+
+      void freebieNumInit(int neighbor_addr);
+
+      int freebieNumGet(int neighbor_addr);
+
+      int freebieNumIncrease(int neighbor_addr);
+
+      bool freebieTableCheck(int neighbor_addr);
    };
 }
 #endif
